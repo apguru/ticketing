@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import Password from "../services/password";
 
 // An interface that describes the properties
-// that are required to create a new User
+// that are requried to create a new User
 interface UserAttrs {
   email: string;
   password: string;
@@ -30,10 +31,19 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
-const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
-
 userSchema.statics.build = (attrs: UserAttrs) => {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return new User(attrs);
 };
+
+userSchema.pre("save", async function (done) {
+  if (this.isModified("password")) {
+    const hashed = await Password.toHash(this.get("password"));
+    this.set("password", hashed);
+  }
+  done();
+});
+
+const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
 
 export default User;
