@@ -6,5 +6,6 @@ module.exports = {
     "no-underscore-dangle": "off",
     "func-names": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-namespace": "off",
   },
 };
