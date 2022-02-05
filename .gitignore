@@ -1,3 +1,8 @@
 /auth/node_modules/
-.idea
+/client/node_modules/
+.idea/
+.vscode/
+.DS_Store
 /auth/package-lock.json
+client/package-lock.json
+client/.next
