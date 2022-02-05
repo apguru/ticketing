@@ -8,11 +8,13 @@ const signup = () => {
   const { doRequest, errors } = useRequest("/api/users/signup", "post", {
     email,
     password,
-  });
+  },
+  () => Router.push("/")
+  );
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    Router.push("/");
+
     doRequest();
   };
 
