@@ -1,8 +1,7 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import request from "supertest";
-import app from "../../app";
+import { app } from "../../app";
 
-it("responds with details of the current user", async () => {
+it("responds with details about the current user", async () => {
   const cookie = await global.signin();
 
   const response = await request(app)

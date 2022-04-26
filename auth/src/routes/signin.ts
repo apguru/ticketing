@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
-import { validateRequest } from "../middlewares/validate-request";
-import User from "../models/user";
-import BadRequestError from "../errors/bad-request-error";
-import Password from "../services/password";
+
+import { validateRequest, BadRequestError } from "@axgurutickets/common";
+import { Password } from "../services/password";
+import { User } from "../models/user";
 
 const router = express.Router();
 
@@ -12,11 +12,15 @@ router.post(
   "/api/users/signin",
   [
     body("email").isEmail().withMessage("Email must be valid"),
-    body("password").trim().notEmpty().withMessage("Password is required"),
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage("You must supply a password"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       throw new BadRequestError("Invalid credentials");
@@ -27,10 +31,11 @@ router.post(
       password
     );
     if (!passwordsMatch) {
-      throw new BadRequestError("Invalid credentials");
+      throw new BadRequestError("Invalid Credentials");
     }
 
-    const userJWT = jwt.sign(
+    // Generate JWT
+    const userJwt = jwt.sign(
       {
         id: existingUser.id,
         email: existingUser.email,
@@ -40,12 +45,11 @@ router.post(
 
     // Store it on session object
     req.session = {
-      jwt: userJWT,
+      jwt: userJwt,
     };
 
-    return res.status(200).send(existingUser);
+    res.status(200).send(existingUser);
   }
 );
 
-// eslint-disable-next-line import/prefer-default-export
-export { router as signInRouter };
+export { router as signinRouter };

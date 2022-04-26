@@ -1,7 +1,6 @@
-import "express-async-errors";
 import mongoose from "mongoose";
 
-import app from "./app";
+import { app } from "./app";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -9,17 +8,14 @@ const start = async () => {
   }
 
   try {
-    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
-    // eslint-disable-next-line no-console
+    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {});
     console.log("Connected to MongoDb");
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
+    console.error(err);
   }
 
   app.listen(3000, () => {
-    // eslint-disable-next-line no-console
-    console.log("Listening on port 3000!");
+    console.log("Listening on port 3000!!!!!!!!");
   });
 };
 

@@ -2,9 +2,8 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
 
-import User from "../models/user";
-import BadRequestError from "../errors/bad-request-error";
-import { validateRequest } from "../middlewares/validate-request";
+import { validateRequest, BadRequestError } from "@axgurutickets/common";
+import { User } from "../models/user";
 
 const router = express.Router();
 
@@ -14,12 +13,13 @@ router.post(
     body("email").isEmail().withMessage("Email must be valid"),
     body("password")
       .trim()
-      .isLength({ min: 4 })
-      .withMessage("Password must be at least 4 characters long"),
+      .isLength({ min: 4, max: 20 })
+      .withMessage("Password must be between 4 and 20 characters"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -30,7 +30,7 @@ router.post(
     await user.save();
 
     // Generate JWT
-    const userJWT = jwt.sign(
+    const userJwt = jwt.sign(
       {
         id: user.id,
         email: user.email,
@@ -40,12 +40,11 @@ router.post(
 
     // Store it on session object
     req.session = {
-      jwt: userJWT,
+      jwt: userJwt,
     };
 
-    return res.status(201).send(user);
+    res.status(201).send(user);
   }
 );
 
-// eslint-disable-next-line import/prefer-default-export
-export { router as signUpRouter };
+export { router as signupRouter };
